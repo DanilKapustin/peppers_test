@@ -1,18 +1,19 @@
 const activityList = {
   "left": { // название активности
     keys: [37, 65], // список кодов кнопок соответствующих активности
-    enabled: false // отключенная активность
+    enabled: true // включенная активность
   },
   "right": {
     keys: [39, 68],
+    enabled: true // включенная активность
   },
   "up": {
     keys: [38, 87],
-    enabled: false // отключенная активность
+    enabled: true // включенная активность
   },
   "down": {
     keys: [40, 83],
-    enabled: false // отключенная активность
+    enabled: true // включенная активность
   },
 }
 
@@ -42,8 +43,6 @@ requestAnimationFrame(update)
 
 function update(){
   try{
-    console.log('this')
-    console.log(controller.isActionActive('left'))
     if(controller.isActionActive("left")){
       console.log('left');
       OX-=5;
@@ -61,9 +60,9 @@ function update(){
       OY+=5;
       target.style.top = OY;
     }
-    // else if (controller.isActionActive('jump')) {
-    //   target.style.backgroundColor = target.style.backgroundColor === bgColor ?  'red' : bgColor ;
-    // }
+    else if (controller.isActionActive('jump')) {
+       target.style.backgroundColor = target.style.backgroundColor === bgColor ?  'red' : bgColor ;
+    }
 
 
     requestAnimationFrame(update)
