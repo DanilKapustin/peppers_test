@@ -7,37 +7,41 @@ class InputController {
 
   activityList; //список активностей
   target; //объект, управляемый контроллером
+  butPress;
 
   constructor(actionsToBind, target) { //actionsToBind - объект с активностями, target - DOM элемент, на котором слушаем активности
-    this.enabled = false;
-    this.focused = true;
-
     this.keyDownHandler = this.keyDownHandler.bind(this);
     this.keyUpHandler = this.keyUpHandler.bind(this);
     
+    this.enabled = false;
+    this.focused = true;
+    
     this.activityList = actionsToBind;
     this.target = target;
-
+    this.butPress = [];
   }
 
-  vkl() {
+  turnON() {
     document.addEventListener('keydown', this.keyDownHandler);
     document.addEventListener('keyup', this.keyUpHandler);
   }  
   
-  vykl() {
+  turnOFF() {
     document.removeEventListener('keydown', this.keyDownHandler);
     document.removeEventListener('keyup', this.keyUpHandler);
   }
 
   keyDownHandler(e) {
-    const name = this.getActionName(e);
-    this.enableAction(name); //передается имя активности
+    console.log('down')
+    if (!this.butPress.includes(e.keyCode))
+      this.butPress.push(e.keyCode);
   }
 
   keyUpHandler(e) {
-    const name = this.getActionName(e);
-    this.disableAction(name); //передается имя активности
+
+    this.butPress = this.butPress.filter(function(item) {
+      return item !== e.keyCode
+    });
   }
 
   getActionName(btn) { //Возвращает название действия из списка по кнопке
@@ -57,17 +61,19 @@ class InputController {
   bindActions(actionsToBind) { //Добавляет в контроллер переданные активности.
     const { activityList } = this;
     Object.entries(actionsToBind).forEach(([actionName, actionData]) => {
-      if (activityList.hasOwnProperty(actionName)) {
+      if (activityList.hasOwnProperty(actionName))  
         this.mergeActions(activityList[actionName], actionData);
-      }
-      else activityList[actionName] = actionData;
+      else 
+        activityList[actionName] = actionData;
     });
   }
 
   mergeActions(target, newAction) { //Изменяет уже имеющиеся действия в actionList
     target.keys = newAction.keys;
-    if (newAction.enabled === undefined) { target.enabled = true; }
-    else target.enabled = newAction.enabled;
+    if (newAction.enabled === undefined) 
+      target.enabled = true; 
+    else 
+      target.enabled = newAction.enabled;
   }
 
   enableAction(actionName) {
@@ -75,38 +81,28 @@ class InputController {
     //Например нажатие кнопки
     if (!this.enabled) return;
 
-    const isActive = this.isActionActive(actionName);
+    this.activityList[actionName].enabled = true;
 
-    if (!isActive) { 
-      Object.entries(this.activityList).forEach(([key, value]) => {
-        if (key === actionName) {
-          value.enabled = true;
-          let event = new CustomEvent(this.ACTION_ACTIVATED, {
-            detail: { action: actionName }
-          });
-          document.dispatchEvent(event); //генерирует событие активация действия
-        }
-      });
+    let event1 = new CustomEvent(this.ACTION_ACTIVATED, {
+      detail: { action: actionName }
+    });
+
+    document.dispatchEvent(event1);
+
     }
-  }
 
-  disableAction(actionName) { //Деактивирует объявленную активность - выключает генерацию событий для этой активности. Отжатие кнопки
+  disableAction(actionName) { 
+    //Деактивирует объявленную активность - выключает генерацию событий для этой активности. Отжатие кнопки
+    
     if (!this.enabled) return;
 
-    Object.entries(this.activityList).forEach(([key, value]) => {
-      if (key === actionName) {        
-        if (this.isActionActive(actionName)) {
+    this.activityList[actionName].enabled = false;
 
-          value.enabled = false;
-
-          let event = new CustomEvent(this.ACTION_DEACTIVATED, {
-            detail: { name: actionName }
-          });
-
-          document.dispatchEvent(event); //генерирует событие активация действия
-        }
-      }
+    let event = new CustomEvent(this.ACTION_DEACTIVATED, {
+      detail: { name: actionName }
     });
+
+    document.dispatchEvent(event);
   }
 
   attach(target, dontEnable) { 
@@ -116,23 +112,32 @@ class InputController {
     if (!dontEnable) {
       this.target = target;
     }
+
     if (this.target != null) {
       this.enabled = true;
     }  
   }
 
-  detach() { //Отцепляет контроллер от активного DOM-элемента и деактивирует контроллер.
+  detach() { 
+    //Отцепляет контроллер от активного DOM-элемента и деактивирует контроллер.
+    
     this.target = null;
     this.enabled = false;  
   }
 
   isActionActive(action) { //Проверяет активирована ли переданная активность в контроллере
-    return (Object.entries(activityList).find(([key,]) => key === action) || [])[1].enabled || false;
+    console.log(action)
+    console.log(this.activityList);
+    for (let i = 0; i < activityList[action].keys.length; i++){ 
+      if(this.isKeyPressed(activityList[action].keys[i])) 
+        return this.activityList[action].enabled;
+    }
+    return false;
   }
 
-  isKeyPressed(keyCode) { //Метод для источника ввода клавиатура. Проверяет нажата ли переданная кнопка в контроллере
-    return (Object.entries(activityList).find(([key, value]) => key === action && value.keys
-    .includes(keyCode)) || [])[1].enabled || false;
+  isKeyPressed(keyCode) { 
+    //Метод для источника ввода клавиатура. Проверяет нажата ли переданная кнопка в контроллере    
+    if (this.butPress !== []) return this.butPress.includes(keyCode);
   }
 
 }

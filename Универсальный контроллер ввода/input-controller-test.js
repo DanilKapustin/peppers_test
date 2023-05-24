@@ -18,36 +18,58 @@ const activityList = {
 
 const target = document.getElementById('cool-rect');
 const controller = new InputController(activityList, target);
+ let OX = 100;
+ let OY = 100;
 
-let OX = 100;
-let OY = 100;
 
 const bgColor = 'green';
 
-document.addEventListener(controller.ACTION_ACTIVATED, function (event) { //Активное действие    
-    const name = event.detail.action; //получает действие из события
-    if (controller.isActionActive(name)) { //если оно активно - перемещаем объект
-    if (name === "left") {
-      OX -= 20;
-      target.style.left = OX;
-    }
-    else if (name === "right") {
-      OX += 20;
-      target.style.left = OX;
-    }
-    else if (name === "up") {
-      OY -= 20;
-      target.style.top = OY;
-    }
-    else if (name === "down") {
-      OY += 20;
-      target.style.top = OY;
-    }
-    else if (name === "jump") {
-      target.style.backgroundColor = target.style.backgroundColor === bgColor ? 'red' : bgColor;
-    }
+document.addEventListener(controller.ACTION_ACTIVATED, function (event) { //Активное действие   
+  try{
+  const name = event.detail.action; //получает действие из события
+    //console.log(name);
+  console.log(event);
+  if (controller.isActionActive(name) ) { //если оно активно - перемещаем объект
+    requestAnimationFrame(update);
   }
+}
+catch 
+{}
 }, false);
+
+controller.enableAction('right');
+requestAnimationFrame(update)
+
+function update(){
+  try{
+    console.log('this')
+    console.log(controller.isActionActive('left'))
+    if(controller.isActionActive("left")){
+      console.log('left');
+      OX-=5;
+      target.style.left = OX;
+    }
+    else if(controller.isActionActive('right')){
+      OX+=5;
+      target.style.left = OX;
+    }
+    else if(controller.isActionActive('up')){
+      OY-=5;
+      target.style.top = OY;
+    }
+    else if(controller.isActionActive('down')){
+      OY+=5;
+      target.style.top = OY;
+    }
+    // else if (controller.isActionActive('jump')) {
+    //   target.style.backgroundColor = target.style.backgroundColor === bgColor ?  'red' : bgColor ;
+    // }
+
+
+    requestAnimationFrame(update)
+  }
+  catch{}
+}
 
 const attach = document.getElementById('attach');
 attach.onclick = function () {
@@ -73,11 +95,11 @@ extraBind.onclick = function () {
 const activation = document.getElementById('activation'); 
 //активация контроллера. Дает реацию на события клавиатуры
 activation.onclick = function () {
-  controller.vkl();
+  controller.turnON();
 };
 
 const deactivation = document.getElementById('deactivation'); 
 //запретить контроллеру генерировать события и реагировать на клавиатуру
 deactivation.onclick = function () { 
-	controller.vykl();
+	controller.turnOFF();
 };
