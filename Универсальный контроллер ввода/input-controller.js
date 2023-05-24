@@ -126,8 +126,8 @@ class InputController {
   }
 
   isActionActive(action) { //Проверяет активирована ли переданная активность в контроллере
-    console.log(action)
-    console.log(this.activityList);
+    if(!(action in this.activityList)) return false;
+
     for (let i = 0; i < activityList[action].keys.length; i++){ 
       if(this.isKeyPressed(activityList[action].keys[i])) 
         return this.activityList[action].enabled;
