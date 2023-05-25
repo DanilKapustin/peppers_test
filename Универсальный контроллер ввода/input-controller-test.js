@@ -22,15 +22,13 @@ const controller = new InputController(activityList, target);
 let OX = 100;
 let OY = 100;
 
-
 const bgColor = 'green';
-
 
 controller.enableAction('right');
 requestAnimationFrame(update)
 
 function update(){
-  try{
+  //try{
     if(controller.isActionActive("left")){
       OX-=5;
       target.style.left = OX;
@@ -52,10 +50,10 @@ function update(){
     }
 
     requestAnimationFrame(update)
-  }
-  catch{
-    alert('Ошибка в update')
-  }
+  //}
+  // catch{
+  //   alert('Ошибка в update')
+  // }
 }
 
 const attach = document.getElementById('attach');

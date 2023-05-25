@@ -1,4 +1,4 @@
-import plaginSettings from "./pluginSettings";
+//import pluginsSettings from "./pluginSettings";
 
 class InputController {
   
@@ -22,14 +22,18 @@ class InputController {
     this.activityList = actionsToBind;
     this.target = target;
     this.butPress = [];
+
+    //тут ещё что-то про плагины
   }
 
   turnON() {
+    //убрать т.к. плагин заменит
     document.addEventListener('keydown', this.keyDownHandler);
     document.addEventListener('keyup', this.keyUpHandler);
   }  
   
   turnOFF() {
+    //убрать т.к. плагин заменит
     document.removeEventListener('keydown', this.keyDownHandler);
     document.removeEventListener('keyup', this.keyUpHandler);
   }
