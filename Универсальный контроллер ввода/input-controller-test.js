@@ -19,24 +19,12 @@ const activityList = {
 
 const target = document.getElementById('cool-rect');
 const controller = new InputController(activityList, target);
- let OX = 100;
- let OY = 100;
+let OX = 100;
+let OY = 100;
 
 
 const bgColor = 'green';
 
-document.addEventListener(controller.ACTION_ACTIVATED, function (event) { //Активное действие   
-  try{
-  const name = event.detail.action; //получает действие из события
-    //console.log(name);
-  console.log(event);
-  if (controller.isActionActive(name) ) { //если оно активно - перемещаем объект
-    requestAnimationFrame(update);
-  }
-}
-catch 
-{}
-}, false);
 
 controller.enableAction('right');
 requestAnimationFrame(update)
@@ -44,7 +32,6 @@ requestAnimationFrame(update)
 function update(){
   try{
     if(controller.isActionActive("left")){
-      console.log('left');
       OX-=5;
       target.style.left = OX;
     }
@@ -61,13 +48,14 @@ function update(){
       target.style.top = OY;
     }
     else if (controller.isActionActive('jump')) {
-       target.style.backgroundColor = target.style.backgroundColor === bgColor ?  'red' : bgColor ;
+      target.style.backgroundColor = target.style.backgroundColor === bgColor ?  'red' : bgColor ;
     }
-
 
     requestAnimationFrame(update)
   }
-  catch{}
+  catch{
+    alert('Ошибка в update')
+  }
 }
 
 const attach = document.getElementById('attach');

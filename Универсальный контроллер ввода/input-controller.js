@@ -1,3 +1,5 @@
+import plaginSettings from "./pluginSettings";
+
 class InputController {
   
   enabled; //<bool> Включение/отключение генерации событий контроллера
@@ -8,6 +10,7 @@ class InputController {
   activityList; //список активностей
   target; //объект, управляемый контроллером
   butPress;
+  plugins;
 
   constructor(actionsToBind, target) { //actionsToBind - объект с активностями, target - DOM элемент, на котором слушаем активности
     this.keyDownHandler = this.keyDownHandler.bind(this);
@@ -32,31 +35,14 @@ class InputController {
   }
 
   keyDownHandler(e) {
-    console.log('down')
     if (!this.butPress.includes(e.keyCode))
       this.butPress.push(e.keyCode);
   }
 
   keyUpHandler(e) {
-
-    this.butPress = this.butPress.filter(function(item) {
-      return item !== e.keyCode
-    });
+    //TODO: filter на splice
+    return this.butPress.splice(this.butPress.indexOf(e.keyCode),1)
   }
-
-  getActionName(btn) { //Возвращает название действия из списка по кнопке
-    let found = "";
-    const list = this.activityList;
-    Object.entries(list).forEach(([key, value]) => {
-      value.keys.forEach(k => {
-        if (k === btn.keyCode) {
-          found = key;
-
-        }
-      });
-    });
-    return found;
-  }  
 
   bindActions(actionsToBind) { //Добавляет в контроллер переданные активности.
     const { activityList } = this;
@@ -82,14 +68,7 @@ class InputController {
     if (!this.enabled) return;
 
     this.activityList[actionName].enabled = true;
-
-    let event1 = new CustomEvent(this.ACTION_ACTIVATED, {
-      detail: { action: actionName }
-    });
-
-    document.dispatchEvent(event1);
-
-    }
+  }
 
   disableAction(actionName) { 
     //Деактивирует объявленную активность - выключает генерацию событий для этой активности. Отжатие кнопки
@@ -97,12 +76,6 @@ class InputController {
     if (!this.enabled) return;
 
     this.activityList[actionName].enabled = false;
-
-    let event = new CustomEvent(this.ACTION_DEACTIVATED, {
-      detail: { name: actionName }
-    });
-
-    document.dispatchEvent(event);
   }
 
   attach(target, dontEnable) { 
@@ -126,18 +99,20 @@ class InputController {
   }
 
   isActionActive(action) { //Проверяет активирована ли переданная активность в контроллере
-    if(!(action in this.activityList)) return false;
+    if (!this.enabled) return;
+
+    if(!(action in this.activityList)) return;
 
     for (let i = 0; i < activityList[action].keys.length; i++){ 
       if(this.isKeyPressed(activityList[action].keys[i])) 
         return this.activityList[action].enabled;
     }
-    return false;
+    return;
   }
 
   isKeyPressed(keyCode) { 
     //Метод для источника ввода клавиатура. Проверяет нажата ли переданная кнопка в контроллере    
-    if (this.butPress !== []) return this.butPress.includes(keyCode);
+    return this.butPress.includes(keyCode);
   }
 
 }
